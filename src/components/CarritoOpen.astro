@@ -1,0 +1,179 @@
+---
+import WhatsApp from '../assets/whatsapp.svg';
+---
+
+<main class="modal-content">
+    <h1 class="carrito-titulo">¡Concreta tu pedido!</h1>
+
+    <table class="carrito-table">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unit.</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+
+        <tbody id="cuerpoCarrito"></tbody>
+    </table>
+
+    <button class="boton-carrito" onclick="concretarPedido()">        
+        <WhatsApp class="icono-boton" />
+        <span>Enviar</span>
+    </button>
+</main>
+
+<style is:global>
+
+    .carrito-titulo {
+        font-family: var(--font-secondary);
+        font-size: 2rem;
+        text-align: center;
+    }
+
+    .carrito-table {
+        width: 100%;
+        height: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2rem;
+
+        & thead {
+            background: var(--color-dark);
+            color: var(--color-accent);
+            & tr {
+                & th {
+                    text-align: left;
+                    padding: .5rem;
+                    font-size: 1rem;
+                    font-family: var(--font-secondary);
+                }
+            }
+        }
+    }
+
+    .item-tabla {
+        color: var(--color-dark);
+        border-bottom: .5px solid var(--color-dark);
+
+        & td {
+            text-align: left;
+            padding: .5rem;
+            font-size: 1rem;
+            font-family: var(--font-secondary);
+        }
+
+    }
+
+    .boton-carrito {
+        border: none;
+        outline: none;
+        padding: 5px;
+        height: 30px;
+        width: 90px;
+        border-radius: 7px;
+        background: var(--color-dark);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        &:hover {
+            opacity: 0.8;
+            cursor: pointer;
+        }
+
+        & span {
+            font-family: var(--font-secondary);
+            font-size: 1rem;
+            color: var(--color-accent);
+        }
+    }
+
+    .icono-boton {
+        color: var(--color-accent);
+        width: 15px;
+        height: 15px;
+    }
+
+</style>
+
+<script type="module">
+
+    window.addEventListener('agregarItem', e => {
+        
+        e.preventDefault();
+        const { id, titulo, precio, cantidad } = e.detail;
+
+        const tbody = document.querySelector('#cuerpoCarrito');
+
+        // Verificar si el producto ya existe en el carrito
+        const buscarItem = tbody.querySelector(`[data-id="${id}"]`);
+        if (buscarItem) {
+            // Suma todos los postres seleccionados
+            let cantidadHTML = Number(buscarItem.querySelector('.item-cantidad').innerText);
+            cantidadHTML += cantidad;
+            buscarItem.querySelector('.item-cantidad').innerText = cantidadHTML;
+
+            // Ajusta el precio final segun el total seleccionado
+            let precioFinal = Number(buscarItem.querySelector('.item-preciofinal').innerText);
+            precioFinal = precio * cantidadHTML;
+            buscarItem.querySelector('.item-preciofinal').innerText = precioFinal;
+
+            return;
+        }
+
+        let totalPostre = precio * cantidad;
+        const nuevoItem = document.createElement('tr');
+        nuevoItem.classList.add('item-tabla');
+        nuevoItem.dataset.id = id;
+        nuevoItem.innerHTML =   `
+                                    <td class="item-titulo">${titulo}</td>
+                                    <td class="item-cantidad">${cantidad}</td>
+                                    <td class="item-precio">${precio}<span>$</span></td>
+                                    <td class="item-preciofinal">${totalPostre}<span>$</span></td>
+                                `;
+
+        tbody.appendChild(nuevoItem);
+    });
+
+    window.concretarPedido = function () {
+        
+        const cuerpo = document.querySelector('#cuerpoCarrito');
+
+        // Verificar si el carrito está vacío
+        if (cuerpo.innerHTML.trim() === '') {
+            console.log('El carrito está vacío, no se puede enviar el pedido');
+            return;
+        }
+
+        const rows = document.querySelectorAll('#cuerpoCarrito tr');
+        const productos = [];
+
+        rows.forEach(row => {
+            const titulo = row.querySelector('.item-titulo')?.textContent;
+            const cantidad = row.querySelector('.item-cantidad')?.textContent;
+            const totalTexto = row.querySelector('.item-preciofinal')?.textContent;
+
+            const total = (totalTexto || '').replace(/[^\d.,]/g, '').trim();
+
+            productos.push({ titulo, cantidad, total });
+        });
+
+        let totalAPagar = 0;
+        let mensaje = `Hola, quiero pedir los siguientes postres:\n\n`;
+        productos.forEach(product => {
+            mensaje += `${product.titulo} - ${product.cantidad} unidades x ${product.total}\n`;
+            totalAPagar += Number(product.total);
+        });
+
+        mensaje += `\nTotal a pagar: ${totalAPagar}$
+                    \n¡Concretamos el pago y el envío!`;
+
+        const numero = '573053717773';
+        const urlWpp = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+        window.open(urlWpp, '_blank');
+
+        cuerpo.innerHTML = '';  
+    }
+
+</script>

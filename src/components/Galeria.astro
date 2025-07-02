@@ -1,0 +1,241 @@
+---
+interface Props {
+    images: string[];
+}
+const { images } = Astro.props;
+
+console.log(images);
+---
+<main>
+    <h1>¡Hacemos detalles a tu estilo!</h1>
+
+    <div class="wrapper">
+        <button id="prev">❮</button>
+        <div class="prev-container">
+        <div class="carousel-wrapper">
+            <div class="carousel-container" id="carousel">
+                    {images.map((src, i) => (
+                        <div class="carousel-slide">
+                            <img src={src} alt={`Imagen ${i + 1}`} loading="lazy" />
+                        </div>
+                    ))}
+            </div>
+        </div>
+        </div>
+        <button id="next">❯</button>
+    </div>
+
+    <div class="texto-container">
+        <p class="texto">Dínos que deseas. Nosotros lo hacemos realidad.</p>
+        <a href="https://wa.me/573053717773" target="_blank">Contáctanos</a>
+    </div>
+
+</main>
+
+<style>
+
+    main {
+        width: 100%;
+        height: 100vh;
+        padding-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 1.75rem;
+        font-family: var(--font-primary);
+        color: var(--color-dark);
+        -webkit-text-stroke-width: .20px;
+    }
+
+    .wrapper {
+        height: 55%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: .5rem;
+        overflow: hidden;
+    }
+
+    #prev, #next {
+        border: none;
+        outline: none;
+        font-size: 1.5rem;
+        font-family: var(--font-secondary);
+        color: var(--color-dark);
+        background: transparent;
+        cursor: pointer;
+
+        &:hover {
+            opacity: .75;
+            scale: 1.2;
+        }
+    }
+
+    .carousel-wrapper {
+        width: 375px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .carousel-container {
+        display: flex;
+        width: 225px; 
+        height: auto;
+        position: relative;
+    }
+
+    .carousel-slide {
+        flex: 0 0 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 20px;
+    }
+
+    .carousel-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 20px;
+    }
+
+    .inactive {
+        opacity: .4;
+        scale: 0.75;
+        border-radius: 20px;
+        transition: all .75s ease-in-out;
+    }
+
+    .active {
+        opacity: 1;
+        scale: 1;
+        border-radius: 20px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        transition: all .75s ease-in-out;
+    }
+
+    .texto-container {
+        width: 100%;
+        padding: 0 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .texto {
+        font-family: var(--font-secondary);
+        font-size: 1rem;
+        color: var(--color-dark);
+        text-align: center;
+    }
+
+    a {
+        margin-top: 1rem;
+        padding: .5rem 1rem;
+        border-radius: 10px;
+        text-align: center;
+        font-family: var(--font-secondary);
+        font-size: 1rem;
+        color: var(--color-accent);
+        background-color: var(--color-dark);
+        text-decoration: none;
+
+        transition: all .2s ease-in-out;
+        animation: scale 1.5s forwards infinite;
+
+        &:hover {
+            opacity: .75;
+            cursor: pointer;
+        }
+    }
+
+	@keyframes scale {
+		0% {
+			transform: scale(1);
+		}
+		50% {
+			transform: scale(1.1);
+		}
+		100% {
+			transform: scale(1);
+		}
+	}
+
+    @media screen and (width <= 768px) {
+        #prev, #next {
+            display: none;
+        }
+    }
+
+</style>
+
+<script type="module">
+
+    const prev = document.querySelector('#prev');
+    const next = document.querySelector('#next');
+    const carousel = document.querySelector('#carousel');
+
+    let currentSlide = 0;
+    const slides = carousel.querySelectorAll('.carousel-slide');
+    const totalSlides = slides.length;
+
+    window.addEventListener('DOMContentLoaded', updateCarousel);
+
+    prev.addEventListener('click', () => {
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        updateCarousel();
+    });
+
+    next.addEventListener('click', () => {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        updateCarousel();
+    });
+
+    function updateCarousel() {
+        slides.forEach((slide, index) => {
+            slide.classList.toggle('active', index === currentSlide);
+            slide.classList.toggle('inactive', index !== currentSlide);
+        });
+
+        carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
+        carousel.style.transition = 'transform .75s ease-in-out';
+    }
+
+    // 👉 Swipe en mobile
+    let startX = 0;
+    let endX = 0;
+
+    carousel.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+    } , { passive: true } );
+
+    carousel.addEventListener('touchend', (e) => {
+        endX = e.changedTouches[0].clientX;
+        handleSwipe();
+    }, { passive: true } );
+
+    function handleSwipe() {
+        const diff = startX - endX;
+        const threshold = 50;
+
+        if (diff > threshold) {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateCarousel();
+        } else if (diff < -threshold) {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateCarousel();
+        }
+    }
+
+</script>
+

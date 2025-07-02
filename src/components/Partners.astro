@@ -1,0 +1,177 @@
+---
+import Tiktok from '../assets/tiktok.svg';
+import Instagram from '../assets/instagram.svg';
+import Whatsapp from '../assets/whatsapp.svg';
+import Github from '../assets/github.svg';
+
+const fecha = new Date();
+const year = fecha.getFullYear();
+---
+
+
+<main>
+
+    <h1>¡Les presentamos nuestros aliados!</h1>
+
+    <section class="partners-container">
+
+        <div class="fk">
+            <h2>Ing. Fadi Kirbag</h2>
+            <img src="/logo-fk.webp" alt="Fadi Kirbag Developer Logo">
+            <p>
+                Desarrollador Web especializado en construir productos digitales sólidos y eficientes, desde la web hasta tu bolsillo.
+            </p>
+            <div class="redes"> 
+                <a href="https://github.com/mrkirbag"target="_blank">
+                    <Github  class="icono" />
+                </a>
+
+                <a href="https://www.instagram.com/mrkirbag?igsh=aXo0MWhvZGt3ZDhu" target="_blank">
+                    <Instagram class="icono" />
+                </a>
+
+                <a href="https://wa.me/584247217176" target="_blank">
+                    <Whatsapp class="icono" />
+                </a>
+            </div>
+        </div>
+
+        <div class="cafe">
+            <h2>Café Glober</h2>
+            <img src="/logo-cafe.webp" alt="Fadi Kirbag Developer Logo">
+            <p>
+                Una mesa compartida, un café en mano, y mil conversaciones que empiezan con un sorbo. Pasaje La Fortaleza, Cra. 13A #12-13, Bogotá, Colombia.
+            </p>
+            <div class="redes"> 
+                <a href="https://www.tiktok.com/@caf.glober?_t=ZS-8xfgDGduzo8&_r=1" target="_blank">
+                    <Tiktok  class="icono" />
+                </a>
+
+                <a href="https://www.instagram.com/cafeglober?igsh=dTlwZWxneGxubDRm" target="_blank">
+                    <Instagram class="icono" />
+                </a>
+
+                <a href="https://wa.me/573057278659" target="_blank">
+                    <Whatsapp class="icono" />
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Copyright © {year} Fadi Kirbag. Todos los derechos reservados.</p>
+    </footer>
+
+</main>
+
+<style>
+
+    main {
+        padding-top: 2rem;
+        width: 100%;
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 1.75rem;
+        font-family: var(--font-primary);
+        color: var(--color-dark);
+        -webkit-text-stroke-width: .20px;
+    }
+
+    .partners-container {
+        padding: 1rem;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        place-items: center;
+        gap: 2rem;
+    }
+    
+    .fk, .cafe {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        padding: 0 2rem;
+
+        & h2 {
+            font-family: var(--font-secondary);
+            font-size: 1.25rem;
+            color: var(--color-dark);
+            -webkit-text-stroke-width: .25px;
+            text-align: center;
+        }
+
+        & img {
+            width: 125px;
+            height: 125px;
+            object-fit: cover;
+            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.2));
+        }
+
+        & p {
+            font-family: var(--font-secondary);
+            font-size: .9rem;
+            text-wrap: pretty;
+            color: var(--color-dark);
+            text-align: center;
+            padding: 0 3rem;
+        }
+    }
+
+    .icono {
+        color: var(--color-dark);
+    }
+
+    .redes {
+        display: flex;  
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+
+        & a {
+            text-decoration: none;
+            transition: all .2s ease-in-out;
+
+            &:hover {
+                scale: 1.2;
+            }
+        }
+    }
+
+    footer {
+        width: 100%;
+        height: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem;
+        background-color: var(--color-dark);
+
+        & p {
+            font-family: var(--font-secondary);
+            font-size: .75rem;
+            color: var(--color-accent);
+        }
+    }
+
+    @media screen and (width <= 768px) {
+        .partners-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            place-items: center;
+            gap: 3rem;
+        }
+
+        .fk p, .cafe p {
+            padding: 0 1rem;
+        }
+    }
+
+</style>

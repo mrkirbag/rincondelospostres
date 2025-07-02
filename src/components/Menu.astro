@@ -1,0 +1,177 @@
+---
+import MenuImg from '../assets/menu.svg';
+---
+
+
+<nav>
+    <div class="menu-logo-container" id="menuToggle">
+        <img src={MenuImg.src} alt="menu" class="menu-logo">
+    </div>
+</nav>
+
+<ul class="menu-mobile" id="menu" style="display: none;">
+    <li class="menu-item">
+        <a href="#hero">Inicio</a>
+    </li>
+    <li class="menu-item">
+        <a href="#postres">Postres</a>
+    </li>   
+    <li class="menu-item">
+        <a href="#regalos">Regalos</a>
+    </li>
+    <li class="menu-item">
+        <a href="#partners">Partners</a>
+    </li>
+</ul>
+
+<style>
+    nav {
+        height: 65px;
+        width: 100vw;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        padding: 1rem;
+        background-color: var(--color-primary);
+        color: var(--color-accent);
+
+        animation: scrolling linear both;
+        animation-timeline: scroll(root);
+        animation-range: 0 25%;
+
+        & .menu-logo-container {
+            width: 50px;
+            height: 50px;
+
+            &:hover {
+                cursor: pointer;
+                opacity: .5;
+            }
+        }
+    }
+
+    .menu-mobile {
+        width: 100%;
+        height: 300px;
+        background: var(--color-primary);
+        display: flex;
+        flex-direction: column;
+
+        & .menu-item {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            list-style: none;
+            border-top: .5px solid var(--color-dark);
+            z-index: 10000;
+
+            & a {
+                font-family: var(--font-secondary);
+                color: var(--color-dark);
+                text-decoration: none;
+                -webkit-text-stroke-width: .25px;
+                font-size: 1.25rem;
+                position: relative;
+                transition: all .2s ease-in-out;
+
+                &:hover {
+                    opacity: .75;
+                    color: var(--color-accent);
+                }
+            }
+        }
+    }
+
+    /* Responsive Design */
+    @media (min-width: 768px) {
+
+        .menu-logo-container {
+            display: none;
+        }
+
+        .responsive-menu {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            padding: 1rem;
+            gap: 3.5rem;
+
+            & .menu-item {
+                list-style: none;
+
+                & a {
+                    font-family: var(--font-secondary);
+                    font-weight: bold;
+                    color: var(--color-dark);
+                    text-decoration: none;
+                    font-size: 1.25rem;
+                    -webkit-text-stroke-width: .25px;
+                    position: relative;
+                    transition: all .2s ease-in-out;
+
+                    &:hover {
+                        opacity: .75;
+                        color: var(--color-accent);
+                    }
+                }
+            }
+        }
+    }
+
+    @keyframes scrolling {
+        0% {
+            height: 65px;
+        }
+        100% {
+            height: 50px;
+        }
+    }
+
+</style>
+
+<script type="module">
+
+    const menuToggle = document.querySelector('#menuToggle');
+    const menu = document.querySelector('#menu');
+    const navbar = document.querySelector('nav');
+
+    // oculta el toggle y muestra el menu
+    menuToggle.addEventListener('click', () => {
+        menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+        // ubicar el menu en la posición relativa al nav
+        navbar.style.position = menu.style.display === 'none' ? 'fixed' : 'relative';
+    });
+
+    // verifica los cambios de resolución del navegador para ajustar el menu
+    setTimeout(() => {
+        window.dispatchEvent(new Event("resize"));
+    }, 100); 
+
+    // verifica los cambios de resolución del navegador para ajustar el menu
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+
+            if (menu.parentNode !== navbar) {
+                navbar.appendChild(menu);
+            }
+            menu.style.display = 'flex'; 
+            menu.classList.remove('menu-mobile'); 
+            menu.classList.add('responsive-menu');
+        } else if (window.innerWidth <= 768) {
+
+            if (menu.parentNode === navbar) {
+                menu.remove(); 
+            }
+            if (navbar.parentNode) {
+                navbar.parentNode.insertBefore(menu, navbar.nextSibling);
+            }
+            menu.style.display = 'none';
+            menu.classList.add('menu-mobile');
+            menu.classList.remove('responsive-menu');
+        }
+    });
+</script>
+    
+

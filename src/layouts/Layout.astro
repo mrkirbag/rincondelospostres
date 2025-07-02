@@ -1,22 +1,333 @@
+---
+import CarritoOpen from '../components/CarritoOpen.astro';
+---
+
 <!doctype html>
-<html lang="en">
+<html lang="es">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="title" content="Rincon de los postres">
+		<meta name="description" content="El Rincón de los Postres es un sitio web que ofrece una experiencia de compra de postres de manera fácil y rápida.">
+		<meta name="keywords" content="postres, cafe, compra, delivery, bogota, colombia">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="language" content="Spanish">
+		<meta name="author" content="Fadi Kirbag">
+
+		<!-- Facebook Meta Tags -->
+		<meta property="og:url" content="https://rincondelospostres.netlify.app">
+		<meta property="og:type" content="website">
+		<meta property="og:title" content="Rincón de los Postres">
+		<meta property="og:description" content="El Rincón de los Postres es un sitio web que ofrece una experiencia de compra de postres de manera fácil y rápida.">
+		<meta property="og:image" content="/galeria/1.webp">
+
+		<!-- Twitter Meta Tags -->
+		<meta name="twitter:card" content="summary_large_image">
+		<meta property="twitter:domain" content="rincondelospostres.netlify.app">
+		<meta property="twitter:url" content="https://rincondelospostres.netlify.app">
+		<meta name="twitter:title" content="Rincón de los Postres">
+		<meta name="twitter:description" content="El Rincón de los Postres es un sitio web que ofrece una experiencia de compra de postres de manera fácil y rápida.">
+		<meta name="twitter:image" content="galeria/1.webp">
+
+		<link rel="icon" type="image/svg+xml" href="/favicon.webp" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>El Rincón de los Postres</title>
 	</head>
+
+
 	<body>
+
 		<slot />
+
+		<div id="modal"></div>
+
+		<section class="carrito" id="carrito" onclick="abrirCarrito()">
+			<img src="/cart.svg" alt="carrito">
+		</section>
+
+		<div class="modal-overlay" id="cartContainer" style="display: none;">
+			<CarritoOpen  />
+		</div>
+				
+
 	</body>
 </html>
 
-<style>
-	html,
-	body {
+<style is:global>
+
+	*, *::before, *::after {
+		box-sizing: border-box;
+		padding: 0;
 		margin: 0;
-		width: 100%;
-		height: 100%;
+		font-family: 'Roboto', sans-serif;
 	}
+	@font-face {
+		font-family: 'Cormorant';
+		src: url('/fonts/CormorantGaramond-Regular.ttf') format('truetype');
+		font-weight: 400;
+		font-style: normal;
+		font-display: swap;
+	}
+	@font-face {
+		font-family: 'Lora';
+		src: url('/fonts/Lora-Regular.ttf') format('truetype');
+		font-weight: 700;
+		font-style: normal;
+		font-display: swap;
+	}
+	:root {
+		--color-primary: #a08161;
+		--color-accent: #F4EDE2;
+		--color-dark: #54302c;
+		--black: #000000;
+		--font-primary: 'Cormorant', sans-serif;
+		--font-secondary: 'Lora', sans-serif;
+	}
+	body {
+		background-color: var(--color-accent);
+	}
+
+/* Diseño de la modal */
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background-color: rgba(0, 0, 0, 0.75);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		z-index: 9999;
+	}
+	.modal-content {
+		background: var(--color-accent);
+		padding: 2rem;
+		border-radius: 12px;
+		width: 40%;
+		height: auto;
+		box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		gap: 1rem;
+
+		& .modal-titulo {
+			font-family: var(--font-secondary);
+			font-size: 1.5rem;
+			text-align: center;
+			margin-bottom: 1rem;
+		}
+
+		& .modal-grid {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			grid-template-rows: 1fr;
+			place-items: center;
+			gap: .5rem;
+			margin: .25rem;
+
+			& .modal-img {
+				grid-row: span 2 / span 2;
+				width: 175px;
+				height: 175px;
+				object-fit: cover;
+				border-radius: 20px;
+			}
+			& .modal-descripcion {
+				font-family: var(--font-secondary);
+				font-size: 1rem;
+				color: var(--color-dark);
+				grid-column-start: 2;
+				justify-self: center;
+			}
+		}
+
+		& .modal-precio {
+			font-family: var(--font-secondary);
+			font-size: 1.25rem;
+			margin: .25rem;
+		}
+		& .cerrar {
+			position: absolute;
+			top: 0;
+			right: 0;
+			margin: .25rem;
+			-webkit-text-stroke-width: .25px;
+			font-family: sans-serif;
+			border: none;
+			outline: none;
+			font-size: 1.25rem;
+			padding: .25rem 1rem;
+			color: var(--color-dark);
+			background: transparent;
+			border-radius: 10px;
+
+			&:hover {
+				scale: 1.1;
+				opacity: .8;
+				cursor: pointer;
+			}
+		}
+	}
+
+/* Seleccionar cantidad de postres y disparar datos seleccionados al carrito. Dentro de modal */
+	.carrito-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        width: 100%;
+
+        & .cantidad-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2.5px;
+
+            & input {
+                width: 90px;
+                height: 30px;
+                outline: none;
+                padding: 5px;
+                border-radius: 5px;
+                border: 1px solid var(--color-dark);
+                background: var(--color-accent);
+                color: var(--color-dark);
+                font-weight: 700;
+
+                &:focus {
+                    border: 2px solid var(--color-dark);
+                }
+            }
+            & button {
+                border: none;
+                outline: none;
+                font-weight: 800;
+                width: 40px;
+                height: 30px;
+                padding: 1px;
+                border-radius: 7px;
+                background: var(--color-dark);
+                color: var(--color-accent);
+                &:hover {
+                    opacity: 0.8;
+                    cursor: pointer;
+                }
+            }
+        }
+        & .boton-detalle {
+            border: none;
+            outline: none;
+            padding: 5px;
+            height: 30px;
+            width: 90px;
+            border-radius: 7px;
+            background: var(--color-dark);
+            &:hover {
+                opacity: 0.8;
+                cursor: pointer;
+            }
+        }
+    }
+
+/* Diseño del boton del carrito */
+	.carrito {
+        position: fixed;
+        z-index: 10000   ;
+        bottom: 30px;
+        right: 0;
+        animation: scale 1.5s forwards infinite;
+
+        &:hover {
+            cursor: pointer;
+            opacity: .9;
+            filter: drop-shadow(0 0 10px rgba(84, 48, 44, 0.5));
+        }
+    }
+
+	@keyframes scale {
+		0% {
+			transform: scale(1);
+		}
+		50% {
+			transform: scale(1.1);
+		}
+		100% {
+			transform: scale(1);
+		}
+	}
+
+/* Responsive para las modales y el carrito */
+	@media (max-width: 768px) {
+		.modal-content {
+			width: 100%;
+			height: 100%;
+			border-radius: 0;
+
+			& .modal-grid {
+				grid-template-columns: 1fr;
+				grid-template-rows: 1fr 1fr;
+				place-items: center;
+				gap: .25rem;
+
+				& .modal-img {
+					grid-row: span 1;
+				}
+				& .modal-descripcion {
+					font-family: var(--font-secondary);
+					font-size: 1rem;
+					color: var(--color-dark);
+					grid-column-start: 1;
+				}
+			}
+		}
+	}
+
+/* Eliminar botones del input number */
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
 </style>
+
+<script type="module">
+
+	document.addEventListener('DOMContentLoaded', function () {
+
+		const modal = document.querySelector('#modal');
+		const carrito = document.querySelector('#carrito');
+		let cartVisible = false;
+
+		window.abrirCarrito = function () {
+
+			if (modal && modal.innerHTML.trim() !== '') {
+				console.log('Con la ventana de postres activa, no se puede abrir el carrito');
+				return;
+			}
+
+			const cartContainer = document.querySelector('#cartContainer');
+
+			if (!cartVisible) {
+				cartContainer.style.display = 'flex';
+				cartVisible = true;
+			} else {
+				cartContainer.style.display = 'none';
+				cartVisible = false;
+			}
+
+			if (cartVisible) {
+				cartContainer.addEventListener('click', function () {
+						cartContainer.style.display = 'none';
+						cartVisible = false;
+				});
+			}
+		}
+
+
+	});
+</script>
+    

@@ -1,0 +1,132 @@
+---
+import Card from './Card.astro';
+
+import { productos } from '../../public/productos';
+---
+
+
+    <section class="products">
+        {productos.map(product => (
+            <Card 
+                id={product.id}
+                titulo={product.titulo}
+                img={product.img}
+                precio={product.precio}
+                descripcion={product.descripcion}
+            />
+        ))}
+    </section>
+
+
+
+<style>
+
+    .products {
+        width: 100%;
+        padding: .5rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        place-items: center;
+    }
+
+</style>
+
+<script type="module">
+
+    import { productos } from '../../public/productos';
+
+    let modalData = {
+        titulo: '',
+        precio: '',
+        img: '',
+        descripcion: '',
+        visible: false
+    };
+
+    window.addEventListener('abrirModal', e => {
+        
+        const { titulo, precio, img, id, descripcion } = e.detail;
+
+        modalData = {
+            id,
+            titulo,
+            precio,
+            img,
+            descripcion,
+            visible: true
+        };
+
+        renderModal(modalData);
+    });
+
+    function renderModal({ titulo, precio, img, descripcion, id, visible }) {
+
+        const container = document.querySelector('#modal');
+
+        container.innerHTML = visible
+        ? `
+            <div class="modal-overlay" onclick="cerrarModal()">
+                <div class="modal-content" onclick="event.stopPropagation()">
+
+                    <h2 class="modal-titulo">${titulo}</h2>
+
+                    <div class="modal-grid">
+                        <img class="modal-img" src="${img}" alt="${titulo}">
+                        <p class="modal-descripcion">${descripcion}</p>
+                    </div>
+
+                    <p class="modal-precio">${precio} $</p>
+
+                    <div class="carrito-container">
+                        <div class="cantidad-container">
+                            <button onclick="this.nextElementSibling.stepDown(1)">-</button>
+                            <input type="number" id="cantidad" min="0">
+                            <button onclick="this.previousElementSibling.stepUp(1)">+</button>
+                        </div>
+                        <button data-id="${id}" id="botonAgregar" class="boton-detalle" onclick="datosPedido()">
+                            <img src="/carrito.svg" alt="carrito">
+                        </button>
+                    </div>
+
+                    <button class="cerrar" onclick="cerrarModal()">X</button>
+
+                </div>
+
+            </div>
+        `
+        : '';
+    }
+
+    window.cerrarModal = function () {
+        renderModal({ visible: false });
+    };
+
+    window.datosPedido = function () {
+
+        const cantidad = Number(document.querySelector('#cantidad').value);
+        const id = Number(document.querySelector('#botonAgregar').dataset.id);  
+
+        // Validar cantidad seleccionada
+        if (cantidad <= 0) {
+            console.log('Debes pedir al menos 1 postre');
+            return;
+        }
+
+        productos.forEach(product => {
+            if (product.id === id) {
+
+                window.dispatchEvent(new CustomEvent('agregarItem', {
+                    detail: {
+                        id: product.id,
+                        titulo: product.titulo,
+                        precio: product.precio,
+                        cantidad: cantidad
+                    }
+                }));
+            }
+        });
+
+        cerrarModal();
+    }
+
+</script>

@@ -1,11 +1,65 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Menu from '../components/Menu.astro';
+import Hero from '../components/Hero.astro';
+import Productos from '../components/Productos.astro';
+import Galeria from '../components/Galeria.astro';
+import Partners from '../components/Partners.astro';
+
+const galleryImages = [
+    '/galeria/1.webp',
+    '/galeria/2.webp',
+    '/galeria/3.webp',
+    '/galeria/4.webp',
+    '/galeria/5.webp',
+    '/galeria/6.webp',
+    '/galeria/7.webp',
+    '/galeria/8.webp',
+    '/galeria/9.webp',
+    '/galeria/10.webp',
+    '/galeria/11.webp',
+    '/galeria/12.webp',
+    '/galeria/13.webp',
+    '/galeria/14.webp',
+];
+
 ---
 
 <Layout>
-	<Welcome />
+    <section class="menu">
+        <Menu />
+    </section>
+    
+    <section class="hero" id="hero">
+        <Hero />
+    </section>
+
+    <section class="postres" id="postres">
+        <Productos />
+    </section>
+
+    <section class="regalos" id="regalos">
+        <Galeria images={galleryImages} />
+    </section>
+
+    <section class="partners" id="partners">
+        <Partners />
+    </section>
 </Layout>
+
+<style>
+    .menu {
+        position: fixed;
+        z-index: 1000;
+    }
+    .postres {
+        padding-top: 3rem;
+    }
+
+    .regalos, .partners {
+        padding-top: 1rem;
+    }
+
+</style>
+
