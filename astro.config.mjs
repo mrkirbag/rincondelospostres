@@ -1,5 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import netlify from '@astrojs/netlify';
+
 
 // https://astro.build/config
 export default defineConfig({
@@ -7,15 +9,8 @@ export default defineConfig({
     devToolbar:{
         enabled: false
     },
+    output: 'server',
+    adapter: netlify(),
+    site: 'https://rincondelospostres.netlify.app'
 
-    vite: {
-        server:{
-            allowedHosts: [
-                'dj34w9-ip-190-153-6-203.tunnelmole.net'
-            ]
-        }
-    },
-
-
-    output: 'server'
 });
