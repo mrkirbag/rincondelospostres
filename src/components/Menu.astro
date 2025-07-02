@@ -172,6 +172,17 @@ import MenuImg from '../assets/menu.svg';
             menu.classList.remove('responsive-menu');
         }
     });
+
+    // cerrar el menú móvil al hacer clic en un enlace
+    document.querySelectorAll('.menu-mobile .menu-item a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                menu.style.display = 'none';
+                navbar.style.position = 'fixed';
+            }
+        });
+    });
+
 </script>
     
 
