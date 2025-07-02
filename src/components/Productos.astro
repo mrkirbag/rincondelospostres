@@ -1,39 +1,66 @@
----
-import Card from './Card.astro';
 
-import { productos } from '../../public/productos';
----
+<section id="productos" class="products"></section>
 
+<script is:inline type="module">
 
-    <section class="products">
-        {productos.map(product => (
-            <Card 
-                id={product.id}
-                titulo={product.titulo}
-                img={product.img}
-                precio={product.precio}
-                descripcion={product.descripcion}
-            />
-        ))}
-    </section>
+document.addEventListener('DOMContentLoaded', async () => {
 
+        const contenedor = document.querySelector('#productos');
 
+        try {
 
-<style>
+            const res = await fetch('/api/productos');
+            const productos = await res.json();
 
-    .products {
-        width: 100%;
-        padding: .5rem;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        place-items: center;
-    }
+            productos.forEach(producto => { 
+                const tarjeta = document.createElement('div');
+                tarjeta.className = 'card';
+                tarjeta.innerHTML = `
+                    <div class="titulo-container">  
 
-</style>
+                        <h3>${producto.titulo}</h3>
+                        <img
+                            alt="${producto.titulo}"
+                            src="${producto.img}"
+                            loading="lazy"
+                            data-id="${producto.id}"
+                            data-titulo="${producto.titulo}"
+                            data-img="${producto.img}"
+                            data-precio="${producto.precio}"
+                            data-descripcion="${producto.descripcion}"
+                        >
 
-<script type="module">
+                    </div>
 
-    import { productos } from '../../public/productos';
+                    <p class="precio">${producto.precio} $</p>
+
+                    <button class="boton-detalle"
+                        data-id="${producto.id}"
+                        data-titulo="${producto.titulo}"
+                        data-img="${producto.img}"
+                        data-precio="${producto.precio}"
+                        data-descripcion="${producto.descripcion}"
+                    >
+                        <img src="/add-to-cart.svg" alt="carrito">
+                    </button>
+                `;
+
+                const triggers = tarjeta.querySelectorAll('img, button');
+                triggers.forEach((el) =>
+                    el.addEventListener('click', () => {
+                        dispatchEvent(new CustomEvent('abrirModal', {
+                            detail: { id: producto.id, titulo: producto.titulo, img: producto.img, precio: producto.precio, descripcion: producto.descripcion },
+                            bubbles: true,
+                        }));
+                    })
+                );
+                
+                contenedor.appendChild(tarjeta);
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    });
 
     let modalData = {
         titulo: '',
@@ -101,10 +128,12 @@ import { productos } from '../../public/productos';
         renderModal({ visible: false });
     };
 
-    window.datosPedido = function () {
+    window.datosPedido = async function () {
 
         const cantidad = Number(document.querySelector('#cantidad').value);
         const id = Number(document.querySelector('#botonAgregar').dataset.id);  
+
+        console.log(id, cantidad);
 
         // Validar cantidad seleccionada
         if (cantidad <= 0) {
@@ -112,6 +141,8 @@ import { productos } from '../../public/productos';
             return;
         }
 
+        const res = await fetch('/api/productos');
+        const productos = await res.json();
         productos.forEach(product => {
             if (product.id === id) {
 
@@ -130,3 +161,14 @@ import { productos } from '../../public/productos';
     }
 
 </script>
+
+<style>
+    .products {
+        width: 100%;
+        padding: .5rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        place-items: center;
+    }
+
+</style>
